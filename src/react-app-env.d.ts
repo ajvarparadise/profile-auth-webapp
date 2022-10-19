@@ -1,6 +1,6 @@
 /// <reference types="react-scripts" />
 
 interface Window {
-    recaptchaVerifier: any,
-    confirmationResult: any
+  recaptchaVerifier: any
+  confirmationResult: any
 }

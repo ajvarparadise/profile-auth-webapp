@@ -1,6 +1,11 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "firebase/auth";
+import { initializeApp } from 'firebase/app'
+import {
+  getAuth,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  onAuthStateChanged,
+} from 'firebase/auth'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -11,12 +16,12 @@ const firebaseConfig = {
   projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGESENDERID,
-  appId: process.env.REACT_APP_FIREBASE_STORAGEBUCKET
-};
+  appId: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
+}
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
 
-export { auth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged };
+export { auth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged }
 export default app
