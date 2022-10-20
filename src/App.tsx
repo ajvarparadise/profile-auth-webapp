@@ -7,30 +7,37 @@ import {
 } from './firebase'
 import { User } from 'firebase/auth'
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 
-const API_ENDPOINT = process.env.REACT_APP_FIREBASE_FUNCTIONS
+const API = axios.create({
+  baseURL: process.env.REACT_APP_FIREBASE_FUNCTIONS,
+  timeout: 1000,
+})
 
 function App() {
   const [credentials, setCredentials] = useState<User | null>(null)
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
-
   onAuthStateChanged(auth, (credentials) => setCredentials(credentials))
+
   useEffect(() => {
     async function getData() {
-      try {
+      try {        
         const response = await fetchUserInfo()
-        const data = await response.json()
-        setUserInfo({ ...userInfo, ...data, phone: credentials?.phoneNumber })
+        setUserInfo({
+          ...response.data,
+          phone: response?.data?.phone,
+        })
       } catch (error) {
         console.log(error)
       }
     }
     getData()
-    return
   }, [])
+
   useEffect(() => {
     setUserInfo({ ...userInfo, phone: credentials?.phoneNumber })
   }, [credentials])
+  
   return (
     <main className="App">
       <h1>Kwitter</h1>
@@ -42,27 +49,20 @@ function App() {
     </main>
   )
 }
+export default App
 
 function fetchUserInfo() {
-  const options = {
-    method: 'POST',
-    body: JSON.stringify({
-      phone: '+46762500502',
-    }),
-  }
-  return fetch(API_ENDPOINT + '/getUserInfo', options)
+  return API.post('/getUserInfo', {
+    phone: '+46762500502',
+  })
 }
-function updateUserInfo(data: any) {
-  const options = {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }
-  return fetch(API_ENDPOINT + '/updateUserInfo', options)
+function updateUserInfo(data: UserInfo) {
+  return API.post('/updateUserInfo', data)
 }
-function Profile({ userInfo }: any) {
+function Profile({ userInfo }: { userInfo: UserInfo }) {
   const [isInputValid, setIsInputValid] = useState(true)
-  const [name, setName] = useState(userInfo?.name)
-  const [email, setEmail] = useState(userInfo?.email)
+  const [name, setName] = useState(userInfo?.name || '')
+  const [email, setEmail] = useState(userInfo?.email || '')
 
   async function handleSubmit() {
     try {
@@ -132,7 +132,7 @@ function Auth({ setCredentials }: { setCredentials: any }) {
     )
   }, [])
 
-  async function onCodeSubmit(code: any) {
+  async function onCodeSubmit(code: string) {
     try {
       const result = await window.confirmationResult.confirm(code)
       setCredentials(result.user)
@@ -196,7 +196,6 @@ interface UserInfo {
   phone?: string | null
 }
 
-export default App
 
 function isEmailValidFormat(email: string) {
   return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
